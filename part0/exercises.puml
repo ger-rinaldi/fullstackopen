@@ -1,0 +1,120 @@
+@startuml exercise-0.4
+
+actor USER
+participant BROWSER
+participant SERVER
+
+' New note creation process
+
+BROWSER -->  USER: Displays new note form from /notes
+
+' USER creates new note
+
+USER ->  BROWSER: Writes on input element
+activate USER
+USER ->  BROWSER: Clicks save button element
+deactivate USER
+activate BROWSER
+
+' New note is saved in SERVER
+
+BROWSER-> SERVER: POST https://studies.cs.helsinki.fi/exampleapp/new_note
+deactivate BROWSER
+activate SERVER
+Note right of BROWSER: BROWSER sends the USER's\ninput to SERVER via POST method
+
+SERVER ->  SERVER: 
+Note left of SERVER: SERVER saves new note on \ndatabase with datetime
+Note left of SERVER: Order client to refresh the page
+SERVER--> BROWSER: 302 URL redirect order to /notes
+deactivate SERVER
+activate BROWSER
+
+Note right of BROWSER: BROWSER reloads the notes page,\n which causes all resources to be reloaded
+Note right of BROWSER: Diagram from 'Loading a page with javascript' starts
+
+BROWSER -> SERVER : GET /notes .html file
+SERVER--> BROWSER: 200 /notes .html file
+BROWSER -> SERVER : GET /notes stylesheet
+SERVER--> BROWSER: 200 stylesheet
+BROWSER -> SERVER : GET /notes javascript
+SERVER--> BROWSER: 200 javascript
+Note left of BROWSER: BROWSER renders html\n with it's style
+
+BROWSER --> USER: Display page without data
+Note right of BROWSER: BROWSER executes javascript and fetches data
+
+BROWSER -> SERVER : GET /notes data.json
+SERVER--> BROWSER: 200 data.json
+Note left of BROWSER: BROWSER renders data to DOM
+
+BROWSER --> USER: Displays data on rendered page 
+
+@enduml
+
+@startuml exercise-0.5
+
+participant BROWSER
+participant SERVER
+
+BROWSER -> SERVER : \t\t\t\t GET /exampleapp/spa \t\t\t\t
+SERVER--> BROWSER : \t\t\t\t 200 /spa .html file \t\t\t\t
+
+BROWSER -> SERVER : \t\t\t\t GET /exampleapp/main.css stylesheet \t\t\t\t
+SERVER--> BROWSER : \t\t\t\t 200 stylesheet\t\t\t\t
+
+BROWSER -> SERVER : \t\t\t\t GET /exampleapp/spa.js js code \t\t\t\t
+SERVER--> BROWSER : \t\t\t\t 200 javascript \t\t\t\t
+Note right of BROWSER : BROWSER executes javascript and fetches data
+
+BROWSER -> SERVER : \t\t\t\t GET /exampleapp/data.json \t\t\t\t
+SERVER--> BROWSER : \t\t\t\t 200 data.json \t\t\t\t
+
+BROWSER -> BROWSER : Check if response is succesful 
+BROWSER -> BROWSER : Decode JSON and make it available in global 'notes' variable
+BROWSER -> BROWSER : Call redrawNotes()
+BROWSER -> BROWSER : Create new <ul> and populate it with data
+BROWSER -> BROWSER : Remove previous <ul> if there is one
+BROWSER -> BROWSER : Append new <ul>
+
+@enduml
+
+@startuml exercise-0.6
+
+actor USER
+participant BROWSER
+participant SERVER
+
+activate BROWSER
+
+BROWSER -> BROWSER : window loads, renders spa page 
+BROWSER -> BROWSER : sets forms onsubmit action
+Note right of BROWSER : form does not have a set action\nthe javascript code will make the POST action
+
+
+BROWSER -->  USER : \t Displays spa page with the new note form \t
+deactivate BROWSER
+
+USER ->  BROWSER : \t Writes on forms input element \t
+activate USER
+USER ->  BROWSER : \t Clicks save button element \t
+deactivate USER
+activate BROWSER
+
+BROWSER -> BROWSER : creates object with the new note and time of creation
+BROWSER -> BROWSER : appends it to array of notes
+BROWSER -> BROWSER : clears form input
+BROWSER -> BROWSER : redraws notes html list
+
+
+Note right of BROWSER: Browser sends the user input and datetime of creation
+BROWSER -> SERVER : \t\t\t POST /exampleapp/new_note_spa \t\t\t
+activate SERVER
+BROWSER --> USER : \t Displays new list to user \t
+SERVER -> SERVER : Saves new note
+SERVER --> BROWSER : \t\t\t 201 message: "note created"
+deactivate SERVER
+
+BROWSER -> BROWSER : logs response message to console
+
+@enduml
