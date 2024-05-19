@@ -2,13 +2,17 @@ const Header = ({ course }) => {
   return <h1>{course}</h1>;
 };
 
+const Part = ({ partInfo }) => {
+  return (
+    <p>
+      {partInfo.name} {partInfo.exercises}
+    </p>
+  );
+};
+
 const Content = ({ partsInfoArray }) => {
   return partsInfoArray.map((partInfo, index) => {
-    return (
-      <p key={index}>
-        {partInfo.name} {partInfo.exercises}
-      </p>
-    );
+    return <Part key={index} partInfo={partInfo} />;
   });
 };
 
