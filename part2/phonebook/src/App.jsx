@@ -1,8 +1,8 @@
-import axios from 'axios';
 import { useState, useEffect } from 'react';
 import FilterSearchBox from './components/FilterSearchBox';
 import NewRegisterForm from './components/NewRegisterForm';
 import PhonebookList from './components/PhonebookList';
+import personService from './services/person';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -10,8 +10,8 @@ const App = () => {
   const [searchFilter, setSearchFilter] = useState('');
 
   useEffect(() => {
-    axios.get('http://localhost:3001/persons').then((response) => {
-      setPersons(response.data);
+    personService.getAll().then((persons) => {
+      setPersons(persons);
     });
   }, []);
 
@@ -25,7 +25,11 @@ const App = () => {
       <h3>add a new</h3>
       <NewRegisterForm phonebook={persons} updatePhonebook={setPersons} />
       <h3>Numbers</h3>
-      <PhonebookList phonebook={persons} searchFilter={searchFilter} />
+      <PhonebookList
+        phonebook={persons}
+        searchFilter={searchFilter}
+        setPersons={setPersons}
+      />
     </div>
   );
 };
