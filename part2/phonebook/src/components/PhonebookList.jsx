@@ -1,7 +1,12 @@
 import ActionButton from './ActionButton';
 import personService from '../services/person';
 
-const PhonebookList = ({ phonebook, searchFilter, setPersons }) => {
+const PhonebookList = ({
+  phonebook,
+  searchFilter,
+  setPersons,
+  setNotification,
+}) => {
   if (searchFilter) {
     return phonebook
       .filter((e) => e.name.match(new RegExp(`^${searchFilter}`, 'i')))
@@ -21,17 +26,18 @@ const PhonebookList = ({ phonebook, searchFilter, setPersons }) => {
       personService
         .erase(personToDelete.id)
         .then((deletedPerson) => {
-          console.log(deletedPerson);
-          alert(
-            `"${personToDelete.name}" has been succesfully deleted from your phonebook!`
-          );
+          setNotification({
+            msg: `"${personToDelete.name}" has been succesfully deleted from your phonebook!`,
+            success: true,
+          });
           setPersons(phonebook.filter((p) => p.id !== deletedPerson.id));
         })
         .catch((error) => {
           console.log(error);
-          alert(
-            `There's been an error while trying to delete "${personToDelete.name}" from your phonebook...\nPlease refresh.`
-          );
+          setNotification({
+            msg: `Information of "${personToDelete.name}" has already been removed from server`,
+            error: true,
+          });
         });
     }
   };

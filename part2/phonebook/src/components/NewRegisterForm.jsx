@@ -2,7 +2,7 @@ import { useState } from 'react';
 import InputText from './InputText';
 import personService from '../services/person';
 
-const NewRegisterForm = ({ phonebook, updatePhonebook }) => {
+const NewRegisterForm = ({ phonebook, updatePhonebook, setNotification }) => {
   const [inputPersonName, setInputPersonName] = useState('');
   const [newInputNumber, setNewInputNumber] = useState('');
 
@@ -18,15 +18,27 @@ const NewRegisterForm = ({ phonebook, updatePhonebook }) => {
             person.id === updatedData.id ? updatedData : person
           )
         );
+        setNotification({
+          msg: `"${updatedData.name}" has been successfuly updated`,
+          success: true,
+        });
       })
       .catch((error) => {
         console.log(error);
+        setNotification({
+          msg: `Information of "${inputPersonName}" has already been removed from server`,
+          error: true,
+        });
       });
   };
 
   const handleCreation = (newPersonData) => {
     personService.create(newPersonData).then((createdPerson) => {
       updatePhonebook([...phonebook, createdPerson]);
+      setNotification({
+        msg: `Added "${newPersonData.name}"`,
+        success: true,
+      });
     });
   };
 
